@@ -1,6 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
-class Post(BaseModel):
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
     id: int
-    title: str
-    content: str
+    email: EmailStr
+
+    class Config():
+        from_attributes = True
