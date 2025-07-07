@@ -1,5 +1,10 @@
-from fastapi import FastAPI, HTTPException, Depends
-from typing import List, Dict, Optional
+from fastapi import FastAPI
+from app.database import engine
+from app import models
+from app.api import users
 
 app=FastAPI()
 
+models.Base.metadata.create_all(bind=engine)
+
+app.include_router(users.router)
