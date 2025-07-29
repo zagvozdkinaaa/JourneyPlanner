@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from datetime import date
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -18,3 +19,19 @@ class Token(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+class TripBase(BaseModel):
+    title: str
+    description: str | None = None
+    start_date: date
+    end_date: date
+
+class TripCreate(TripBase):
+    pass 
+
+class TripResponse(TripBase):
+    id: int
+    owner_id: int
+
+    class Config:
+        from_attributes = True

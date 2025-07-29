@@ -16,4 +16,3 @@ def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: S
         raise HTTPException(status_code=401, detail='Incorrect email or password')
     access_token=create_access_token(data = {'sub': user.email})
     return {'access_token': access_token, 'token_type': 'bearer'}
-
