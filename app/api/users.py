@@ -22,10 +22,12 @@ def register_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     
     return new_user
 
+
 @router.get('/', response_model=List[schemas.UserResponse])
 def get_all_users(db: Session = Depends(get_db)):
     users=db.query(models.User).all()
     return users
+
 
 @router.get('/me')
 def get_profile(current_user: models.User = Depends(get_current_user)):

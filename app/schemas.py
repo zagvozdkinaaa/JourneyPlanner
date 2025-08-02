@@ -35,3 +35,9 @@ class TripResponse(TripBase):
 
     class Config:
         from_attributes = True
+
+class TripUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
