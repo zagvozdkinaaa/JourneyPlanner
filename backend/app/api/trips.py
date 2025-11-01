@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
 from app.database import get_db
 from app.utils.security import get_current_user
@@ -20,14 +20,18 @@ def trip_create(trip: schemas.TripCreate, db: Session = Depends(get_db), current
 
 @router.get('/', response_model=List[schemas.TripResponse])
 def get_all_trips(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    trips=db.query(models.Trip).filter(models.Trip.owner_id == current_user.id).all()
+    trips = db.query(models.Trip).options(
+        joinedload(models.Trip.activities)
+    ).filter(models.Trip.owner_id == current_user.id).all()
 
     return trips
 
 
 @router.get('/{trip_id}', response_model=schemas.TripResponse)
 def get_trip(trip_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    trip=db.query(models.Trip).filter(models.Trip.id == trip_id, models.Trip.owner_id == current_user.id).first()
+    trip = db.query(models.Trip).options(
+        joinedload(models.Trip.activities)
+    ).filter(models.Trip.id == trip_id, models.Trip.owner_id == current_user.id).first()
     if not trip:
         raise HTTPException(status_code=404, detail='Trip not found')
     
@@ -36,10 +40,12 @@ def get_trip(trip_id: int, db: Session = Depends(get_db), current_user: models.U
 
 @router.put('/{trip_id}', response_model=schemas.TripResponse)
 def update_trip(trip_id: int, trip_data: schemas.TripUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    trip=db.query(models.Trip).filter(models.Trip.id == trip_id, models.Trip.owner_id == current_user.id).first()
+    trip = db.query(models.Trip).options(
+        joinedload(models.Trip.activities)
+    ).filter(models.Trip.id == trip_id, models.Trip.owner_id == current_user.id).first()
     if not trip:
         raise HTTPException(status_code=404, detail='Trip not found')
-    trip_data_dict = trip_data.dict()
+    trip_data_dict = trip_data.dict(exclude_unset=True)
     for key, value in trip_data_dict.items():
         setattr(trip, key, value)
 
