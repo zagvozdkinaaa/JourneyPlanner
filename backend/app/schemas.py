@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import date, time
 from typing import List
 from app.models import CompanionType
@@ -32,7 +32,6 @@ class TripBase(BaseModel):
     end_date: date
     city: str | None = None
     budget_per_person: float | None = None
-    number_of_days: int | None = None
     companions: CompanionType | None = None
     interests: List[str] | None = None
 
@@ -42,7 +41,8 @@ class TripCreate(TripBase):
 class TripResponse(TripBase):
     id: int
     owner_id: int
-    activities: List[ActivityResponse] = []
+    number_of_days: int
+    activities: List[ActivityResponse] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
@@ -54,7 +54,6 @@ class TripUpdate(BaseModel):
     end_date: date | None = None
     city: str | None = None
     budget_per_person: float | None = None
-    number_of_days: int | None = None
     companions: CompanionType | None = None
     interests: List[str] | None = None
 
